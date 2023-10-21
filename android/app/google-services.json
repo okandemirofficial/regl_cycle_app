@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "617885300263",
+    "project_id": "regl-cycle-app",
+    "storage_bucket": "regl-cycle-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617885300263:android:c629213ce57a5ca8be4002",
+        "android_client_info": {
+          "package_name": "com.example.regl_cycle_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsHSOHLL6EU0OuPju0pq4W9gU6jeNlonE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
