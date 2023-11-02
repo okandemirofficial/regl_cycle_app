@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:regl_cycle_app/functions/notification_helper.dart';
 import 'package:regl_cycle_app/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -77,8 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
         nextRegl = difference.inDays;
       });
     } else {
-      setState(() {
+      setState(() async {
+        await NotificationHelper.showNotification(title: "Regl Cycle", body:"Your period is approaching");
         nextRegl = 0;
+
       });
     }
   }
