@@ -24,7 +24,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isLoading = false;
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
@@ -58,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           radius: 50,
                           backgroundImage: MemoryImage(_image!),
                         )
-                      : CircleAvatar(
+                      : const CircleAvatar(
                           radius: 50,
                           backgroundImage: AssetImage("assets/person.jfif"),
                         ),
@@ -67,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     bottom: -10,
                     child: IconButton(
                       onPressed: selectImage,
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.add_a_photo_outlined,
                         color: Color(0xFF355070),
                       ),
@@ -114,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (res == "success") {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
-                          return LoginScreen();
+                          return const LoginScreen();
                         }),
                       );
                     }
@@ -145,7 +144,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
-                          return LoginScreen();
+                          return const LoginScreen();
                         }),
                       );
                     },

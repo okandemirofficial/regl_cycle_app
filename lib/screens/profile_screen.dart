@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:regl_cycle_app/model/user.dart';
 import 'package:regl_cycle_app/resources/auth_methods.dart';
 import 'package:regl_cycle_app/screens/login_screen.dart';
 import 'package:regl_cycle_app/utils/image_helper.dart';
@@ -17,12 +18,12 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  var userData = {};
+  var userData;
+  ModelUser? modelUser;
   Uint8List? _image;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getData();
   }
@@ -30,7 +31,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   getData() async {
     try {
       var userSnap = await firestore.collection("users").doc(widget.uid).get();
-      userData = userSnap.data()!;
+      userData = userSnap.data()! as Map<String, dynamic>;
+      if (userData!=null) { // && modelUser!.email.isEmpty ?? true
+         modelUser = ModelUser.fromMap(userData);
+      }
       getImage();
       setState(() {});
     } catch (e) {}
@@ -66,7 +70,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 70,
                   ),
                   Text(
-                    userData['username'],
+                    modelUser?.username==null?
+                      "Loading..."
+                    :
+                    modelUser!.username,
                     style:
                         const TextStyle(color: Color(0xFF3a0ca3), fontSize: 20),
                   ),
@@ -74,7 +81,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 40,
                   ),
                   Text(
-                    userData['email'],
+                    modelUser?.email==null?
+                      "Loading..."
+                    :
+                    modelUser!.email,
                     style:
                         const TextStyle(color: Color(0xFF3a0ca3), fontSize: 20),
                   ),

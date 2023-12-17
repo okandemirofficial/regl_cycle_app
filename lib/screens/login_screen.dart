@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:regl_cycle_app/resources/auth_methods.dart';
-import 'package:regl_cycle_app/screens/homeScreen.dart';
+import 'package:regl_cycle_app/screens/home_screen.dart';
 import 'package:regl_cycle_app/screens/signup_screen.dart';
 import 'package:regl_cycle_app/widget/text_field_input.dart';
 
@@ -13,15 +13,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   bool isloading = false;
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -32,23 +31,21 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
                 Flexible(
-                  child: Container(),
                   flex: 1,
+                  child: Container(),
                 ),
                 const SizedBox(
                   height: 30,
                 ),
-                Container(
-                  child: Image.asset(
-                    "assets/welcome.jfif",
-                    fit: BoxFit.cover,
-                  ),
+                Image.asset(
+                  "assets/welcome.jfif",
+                  fit: BoxFit.cover,
                 ),
                 TextFieldInput(
                     controller: _emailController,
@@ -110,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
-                          return SignUpScreen();
+                          return const SignUpScreen();
                         }));
                       },
                       child: const Text(
@@ -121,8 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 Flexible(
-                  child: Container(),
                   flex: 2,
+                  child: Container(),
                 ),
               ],
             ),

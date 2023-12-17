@@ -4,19 +4,28 @@ class ModelUser {
   final String email;
   final String uid;
   final String username;
+  final Timestamp? startTime;
+  final Timestamp? endTime;
+  final Map? selectedDates;
 
-  const ModelUser({
+  ModelUser({
     required this.email,
     required this.uid,
     required this.username,
+    this.startTime,
+    this.endTime,
+    this.selectedDates
   });
 
-  static ModelUser fromSnap(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
+  static ModelUser fromMap(Map<String, dynamic> map) {
     return ModelUser(
-        email: snapshot['email'],
-        uid: snapshot["uid"],
-        username: snapshot['username']);
+      email: map['email'],
+      uid: map["uid"],
+      username: map['username'],
+      selectedDates: map['selectedDates'],
+      startTime: map['selectedDates']['start'],
+      endTime: map['selectedDates']['end'],
+    );
   }
 
   Map<String, dynamic> toJson() => {

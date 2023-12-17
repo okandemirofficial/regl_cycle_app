@@ -2,13 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:regl_cycle_app/firebase_options.dart';
-import 'package:regl_cycle_app/functions/notification_helper.dart';
-import 'package:regl_cycle_app/screens/homeScreen.dart';
+import 'package:regl_cycle_app/screens/home_screen.dart';
 import 'package:regl_cycle_app/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationHelper.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

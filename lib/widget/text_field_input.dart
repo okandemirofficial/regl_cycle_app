@@ -17,10 +17,10 @@ class TextFieldInput extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal:25),
       child: Container(   
-        padding: EdgeInsets.all(8),     
+        padding: const EdgeInsets.all(8),     
         decoration: BoxDecoration(
           border: Border.all(
-            color: Color(0xFFD5BDAF)
+            color: const Color(0xFFD5BDAF)
           )
         ),
         child: TextFormField(
