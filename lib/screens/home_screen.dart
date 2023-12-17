@@ -19,7 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   int? leftedDays;
-  bool isLoading = false;
+  bool isLoading = true;
+  bool isError = false;
+
+  bool get isErrorOrLoading => isLoading || isError;
 
   ModelUser? modelUser; //*
 
@@ -47,14 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
       modelUser = ModelUser.fromMap(
           userData); //* burdan verileri firebaseden çekerken sorun yaşıyor. firebase e veriler gidiyor
 
-      diffrentDates();
-      startTimer();
-      nextReglDate();
-      setState(() {});
-    } catch (e) {}
-    setState(() {
+      if (modelUser?.endTime != null && modelUser?.startTime != null) {
+        diffrentDates();
+        startTimer();
+        nextReglDate();
+      }
+    } catch (e) {
+      isError = true;
+    } finally {
       isLoading = false;
-    });
+      setState(() {});
+    }
   }
 
   startTimer() {
@@ -72,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   nextReglDate() {
-    newStartTime = end!.add(const Duration(days: 20));
+    newStartTime = end?.add(const Duration(days: 20));
     DateTime now = DateTime.now();
     if (newStartTime != null && now.isBefore(newStartTime!)) {
       Duration difference = newStartTime!.difference(now);
@@ -87,13 +93,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   diffrentDates() {
-    Timestamp? startTimestamp = modelUser!.startTime;
-    Timestamp? endTimestamp = modelUser!.endTime;
-    start = startTimestamp!.toDate();
-    end = endTimestamp!.toDate();
-    difference = end!.difference(start!);
+    Timestamp? startTimestamp = modelUser?.startTime;
+    Timestamp? endTimestamp = modelUser?.endTime;
+    start = startTimestamp?.toDate();
+    end = endTimestamp?.toDate();
+    difference = end?.difference(start ?? DateTime.now());
     //print("difference");
-    daysDifference = difference!.inDays;
+    daysDifference = difference?.inDays;
 
     setState(() {
       leftedDays = daysDifference;
@@ -111,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await firebaseFirestore.collection("users").doc(widget.uid).get();
     var userData = userSnap.data() as Map<String, dynamic>;
     modelUser = ModelUser.fromMap(userData);
-    
+
     selectedDates = dateTimeRange;
     diffrentDates();
     startTimer();
@@ -142,104 +148,135 @@ class _HomeScreenState extends State<HomeScreen> {
               ))
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 10, left: 20),
-            child: Material(
-              elevation: 5,
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: MediaQuery.of(context).size.height * 0.09,
-                margin: const EdgeInsets.only(top: 15, left: 15),
-                padding: const EdgeInsets.all(15),
-                child: Text(
-                  modelUser?.username == null
-                      ? "Loading"
-                      : "Welcome Back     ${modelUser!.username}",
-                  style: GoogleFonts.lobster(
-                      textStyle: const TextStyle(
-                          fontSize: 25, color: Color(0xFFb298dc))),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 10, left: 20),
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: MediaQuery.of(context).size.height * 0.6,
-            padding: const EdgeInsets.all(40),
-            decoration: const BoxDecoration(
-                color: Color(0xFFb298dc),
-                borderRadius: BorderRadius.all(Radius.circular(300))),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                    leftedDays == null
-                        ? "Create your first period"
-                        : "${leftedDays == 0 ? 'Your period is over, get well soon' : '$leftedDays days left until your period ends'} ",
-                    style: GoogleFonts.lobster(
-                        textStyle: const TextStyle(
-                            fontSize: 35, color: Colors.white))),
-                const SizedBox(
-                  height: 15,
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      final DateTimeRange? dateTimeRange =
-                          await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(3000));
-                      if (dateTimeRange != null) {
-                        updateSelectedDates(dateTimeRange);
-                      }
-                    },
-                    child: Text("Edit Date",
-                        style: GoogleFonts.lobster(
-                            textStyle: const TextStyle(
-                                fontSize: 25, color: Color(0xFFb298dc))))),
-                const SizedBox(
-                  height: 15,
-                ),
-                Text(
-                    nextRegl == null
-                        ? "Loading..."
-                        : "Next period in $nextRegl days",
-                    style: GoogleFonts.lobster(
-                        textStyle:
-                            const TextStyle(fontSize: 20, color: Colors.white)))
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 10, left: 20),
-            child: Material(
-              elevation: 5,
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: MediaQuery.of(context).size.height * 0.09,
-                margin: const EdgeInsets.only(top: 15, left: 15),
-                padding: const EdgeInsets.all(15),
-                child: Text(
-                  daysDifference == null
-                      ? "Loading..."
-                      : "Last month your period lasts about $daysDifference days",
-                  style: GoogleFonts.lobster(
-                      textStyle: const TextStyle(
-                          fontSize: 15, color: Color(0xFFb298dc))),
-                ),
-              ),
-            ),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : isError
+                ? const Text('hata')
+                : _ContentWidget(
+                    modelUser: modelUser!,
+                    leftedDays: leftedDays,
+                    updateFunction: updateSelectedDates,
+                    nextRegl: nextRegl,
+                    daysDifference: daysDifference,
+                  ),
       ),
+    );
+  }
+}
+
+class _ContentWidget extends StatelessWidget {
+  const _ContentWidget({
+    required this.modelUser,
+    required this.leftedDays,
+    required this.updateFunction,
+    required this.nextRegl,
+    required this.daysDifference,
+  });
+
+  final ModelUser modelUser;
+  final int? leftedDays;
+  final void Function(DateTimeRange dateTimeRange) updateFunction;
+  final int? nextRegl;
+  final int? daysDifference;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 10, left: 20),
+          child: Material(
+            elevation: 5,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.09,
+              margin: const EdgeInsets.only(top: 15, left: 15),
+              padding: const EdgeInsets.all(15),
+              child: Text(
+                "Welcome Back ${modelUser.username}",
+                style: GoogleFonts.lobster(
+                    textStyle: const TextStyle(
+                        fontSize: 25, color: Color(0xFFb298dc))),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 10, left: 20),
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.6,
+          padding: const EdgeInsets.all(40),
+          decoration: const BoxDecoration(
+              color: Color(0xFFb298dc),
+              borderRadius: BorderRadius.all(Radius.circular(300))),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                  leftedDays == null
+                      ? "Create your first period"
+                      : "${leftedDays == 0 ? 'Your period is over, get well soon' : '$leftedDays days left until your period ends'} ",
+                  style: GoogleFonts.lobster(
+                      textStyle:
+                          const TextStyle(fontSize: 35, color: Colors.white))),
+              const SizedBox(
+                height: 15,
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    final DateTimeRange? dateTimeRange =
+                        await showDateRangePicker(
+                            context: context,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(3000));
+                    if (dateTimeRange != null) {
+                      updateFunction(dateTimeRange);
+                    }
+                  },
+                  child: Text("Edit Date",
+                      style: GoogleFonts.lobster(
+                          textStyle: const TextStyle(
+                              fontSize: 25, color: Color(0xFFb298dc))))),
+              const SizedBox(
+                height: 15,
+              ),
+              Text(
+                  nextRegl == null
+                      ? "Loading..."
+                      : "Next period in $nextRegl days",
+                  style: GoogleFonts.lobster(
+                      textStyle:
+                          const TextStyle(fontSize: 20, color: Colors.white)))
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 10, left: 20),
+          child: Material(
+            elevation: 5,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.09,
+              margin: const EdgeInsets.only(top: 15, left: 15),
+              padding: const EdgeInsets.all(15),
+              child: Text(
+                daysDifference == null
+                    ? "Loading..."
+                    : "Last month your period lasts about $daysDifference days",
+                style: GoogleFonts.lobster(
+                    textStyle: const TextStyle(
+                        fontSize: 15, color: Color(0xFFb298dc))),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

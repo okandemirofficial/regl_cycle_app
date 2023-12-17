@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: userData.isEmpty
+      body: userData == null || userData.isEmpty
           ? const Center(
               child: CircularProgressIndicator(),
             )

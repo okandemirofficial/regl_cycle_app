@@ -8,14 +8,13 @@ class ModelUser {
   final Timestamp? endTime;
   final Map? selectedDates;
 
-  ModelUser({
-    required this.email,
-    required this.uid,
-    required this.username,
-    this.startTime,
-    this.endTime,
-    this.selectedDates
-  });
+  ModelUser(
+      {required this.email,
+      required this.uid,
+      required this.username,
+      this.startTime,
+      this.endTime,
+      this.selectedDates});
 
   static ModelUser fromMap(Map<String, dynamic> map) {
     return ModelUser(
@@ -23,9 +22,20 @@ class ModelUser {
       uid: map["uid"],
       username: map['username'],
       selectedDates: map['selectedDates'],
-      startTime: map['selectedDates']['start'],
-      endTime: map['selectedDates']['end'],
+      startTime: map['selectedDates']?['start'],
+      endTime: map['selectedDates']?['end'],
     );
+
+    /// {
+    ///
+    ///   "email" : "me@okandemir.net",
+    ///   "username" : "okan3358"
+    ///   "uid" : "sdlkfmekkesklbmklbmlke",
+    ///     "selectedDates" : {
+    ///          "start" : 029348290340923
+    ///           "end" : 029348290340923
+    ///      }
+    /// }
   }
 
   Map<String, dynamic> toJson() => {
